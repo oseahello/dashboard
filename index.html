@@ -3,137 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Nocturno Transparente</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>HomeDash Personal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-overlay: rgba(0, 0, 0, 0.4); /* Mucho más transparente para ver el fondo */
-            --card-bg: rgba(255, 255, 255, 0.05); /* Recuadros casi invisibles */
-            --text-main: #ffffff;
-            --accent: #38bdf8; /* Tu azul */
+            /* Paleta Estilo Home Assistant / HomeDash */
+            --bg-color: #0d1117;
+            --card-bg: rgba(22, 27, 34, 0.6); 
+            --accent: #38bdf8; /* Azul Cian Eléctrico */
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --border-color: rgba(255, 255, 255, 0.1);
         }
 
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 30px;
-            min-height: 100vh;
-            color: var(--text-main);
-            /* IMAGEN DE FONDO NOCTURNA */
-            background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
-                        url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            color: var(--text-primary);
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
             background-size: cover;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
         }
 
-        .card { 
-            background: var(--card-bg); 
-            border-radius: 20px; 
-            padding: 25px; 
-            backdrop-filter: blur(5px); /* Desenfoque suave */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
         }
 
-        .clock { font-size: 4rem; font-weight: 700; text-align: center; color: var(--accent); text-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
-        h2 { font-size: 1rem; margin-top: 0; border-bottom: 1px solid var(--accent); padding-bottom: 10px; color: var(--accent); text-transform: uppercase; }
-        
-        .dolar-price { font-size: 1.8rem; font-weight: bold; color: #4ade80; }
-        .content { font-size: 1rem; line-height: 1.6; color: #ffffff; }
-        
-        a { color: var(--accent); text-decoration: none; font-weight: 500; }
-        #news-list { list-style: none; padding: 0; }
-        #news-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+        .clock-section { text-align: center; grid-column: span 1; }
+        .clock { font-size: 3.8rem; font-weight: 600; color: var(--text-primary); margin: 0; letter-spacing: -2px; }
+        .date { color: var(--accent); text-transform: uppercase; font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; }
 
-        .weather-box { grid-column: span 2; min-height: 300px; }
+        h2 { 
+            font-size: 0.85rem; 
+            color: var(--text-secondary); 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            margin-bottom: 20px;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: var(--accent);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+        .dolar-val { font-size: 1.8rem; font-weight: 600; color: var(--text-primary); }
+        .dolar-label { font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 4px; }
+
+        .weather-container { grid-column: span 2; min-height: 280px; }
+        
+        #news-container { font-size: 0.9rem; line-height: 1.4; }
+        .news-link { 
+            display: block; 
+            color: var(--text-primary); 
+            text-decoration: none; 
+            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+        }
+        .news-link:hover { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
+
+        /* Palabra del día con estilo limpio */
+        .word-title { font-size: 1.5rem; color: var(--accent); font-weight: 600; margin-bottom: 5px; }
+        .word-desc { color: var(--text-secondary); font-style: italic; }
+
+        @media (max-width: 768px) {
+            body { padding: 15px; }
+            .weather-container { grid-column: span 1; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="clock" id="clock">00:00:00</div>
-        <div id="date" style="text-align: center; opacity: 0.9; font-size: 1.2rem;">Cargando...</div>
+    <div class="card clock-section">
+        <div class="date" id="date">CARGANDO...</div>
+        <div class="clock" id="clock">00:00</div>
     </div>
 
     <div class="card">
-        <h2>Dólar en Argentina</h2>
-        <div style="display: flex; justify-content: space-around; text-align: center;">
-            <div><div style="font-size: 0.8rem; opacity: 0.7;">OFICIAL</div><div class="dolar-price" id="dolar-oficial">...</div></div>
-            <div><div style="font-size: 0.8rem; opacity: 0.7;">BLUE</div><div class="dolar-price" id="dolar-blue">...</div></div>
+        <h2>Mercado Financiero</h2>
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                <div class="dolar-label">BLUE VENTA</div>
+                <div class="dolar-val" id="blue-val">...</div>
+            </div>
+            <div style="text-align: right;">
+                <div class="dolar-label">OFICIAL</div>
+                <div class="dolar-val" id="oficial-val" style="color: var(--text-secondary); font-size: 1.4rem;">...</div>
+            </div>
         </div>
     </div>
 
-    <div class="card weather-box" id="clima-container">
-        <h2>Clima y Pronóstico 7 Días</h2>
-        <a class="weatherwidget-io" href="https://forecast7.com/es/n34d60s58d38/buenos-aires/" data-label_1="BUENOS AIRES" data-theme="pure" data-textcolor="#ffffff" data-days="7">CLIMA</a>
+    <div class="card weather-container">
+        <h2>Estado del Tiempo</h2>
+        <a class="weatherwidget-io" href="https://forecast7.com/es/n34d60s58d38/buenos-aires/" data-label_1="BUENOS AIRES" data-theme="pure" data-textcolor="#f0f6fc" data-accent="#38bdf8" data-days="7">CLIMA</a>
     </div>
 
     <div class="card">
-        <h2>Últimas Noticias</h2>
-        <div class="content">
-            <div id="news-list">Cargando noticias desde el servidor...</div>
-        </div>
+        <h2>Titulares</h2>
+        <div id="news-container">Cargando noticias...</div>
     </div>
 
     <div class="card">
-        <h2>Palabra del Día</h2>
-        <div class="content">
-            <p style="font-size: 1.5rem; color: var(--accent); font-weight: bold; margin: 0;">Serenidad</p>
-            <p style="opacity: 0.8;">Cualidad de sereno; tranquilidad, apacibilidad.</p>
-        </div>
+        <h2>Diccionario Diario</h2>
+        <div class="word-title">Efímero</div>
+        <div class="word-desc">Aquello que dura por un período muy corto de tiempo.</div>
     </div>
 
     <script>
-        // 1. RELOJ ACTUALIZADO
-        function updateClock() {
+        // Reloj
+        function updateTime() {
             const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString('es-AR');
-            document.getElementById('date').textContent = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
+            document.getElementById('clock').textContent = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('date').textContent = now.toLocaleDateString('es-AR', { weekday: 'short', day: '2-digit', month: 'short' });
         }
-        setInterval(updateClock, 1000);
-        updateClock();
+        setInterval(updateTime, 1000); updateTime();
 
-        // 2. DÓLAR (API SEGURA)
-        async function getDolar() {
+        // Finanzas
+        async function fetchFinance() {
             try {
                 const res = await fetch('https://dolarapi.com/v1/dolares');
                 const data = await res.json();
-                document.getElementById('dolar-oficial').textContent = `$${data.find(d => d.casa === "oficial").venta}`;
-                document.getElementById('dolar-blue').textContent = `$${data.find(d => d.casa === "blue").venta}`;
-            } catch (e) { document.getElementById('dolar-blue').textContent = "---"; }
+                document.getElementById('blue-val').textContent = `$${data.find(d => d.casa === "blue").venta}`;
+                document.getElementById('oficial-val').textContent = `$${data.find(d => d.casa === "oficial").venta}`;
+            } catch (e) { console.error("Error Finanzas"); }
         }
-        getDolar();
+        fetchFinance();
 
-        // 3. NOTICIAS (NUEVO MÉTODO)
-        async function getNews() {
-            const newsContainer = document.getElementById('news-list');
+        // Noticias (Método Reforzado)
+        async function fetchNews() {
             try {
                 const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.clarin.com/rss/lo-ultimo/');
                 const data = await res.json();
-                let html = '';
-                data.items.slice(0, 4).forEach(item => {
-                    html += `<div style="margin-bottom:15px;"><a href="${item.link}" target="_blank">● ${item.title}</a></div>`;
-                });
-                newsContainer.innerHTML = html;
-            } catch (e) {
-                newsContainer.innerHTML = "No se pudieron cargar las noticias. Intenta refrescar.";
-            }
+                document.getElementById('news-container').innerHTML = data.items.slice(0, 4).map(item => 
+                    `<a href="${item.link}" class="news-link" target="_blank">${item.title}</a>`
+                ).join('');
+            } catch (e) { document.getElementById('news-container').textContent = "Reconectando noticias..."; }
         }
-        getNews();
+        fetchNews();
+        setInterval(fetchNews, 600000); // Actualiza cada 10 min
 
-        // 4. CLIMA (CARGA FORZADA)
-        function initWeather() {
-            var js, fjs = document.getElementsByTagName('script')[0];
-            if (!document.getElementById('weatherwidget-io-js')) {
+        // Carga de Clima con retardo para evitar bloqueos de GitHub
+        window.onload = function() {
+            setTimeout(function() {
+                var js, fjs = document.getElementsByTagName('script')[0];
                 js = document.createElement('script');
                 js.id = 'weatherwidget-io-js';
                 js.src = 'https://weatherwidget.io/js/widget.min.js';
                 fjs.parentNode.insertBefore(js, fjs);
-            }
-        }
-        setTimeout(initWeather, 1500); // Esperamos 1.5 segundos para cargar el clima
+            }, 1000);
+        };
     </script>
 </body>
 </html>
