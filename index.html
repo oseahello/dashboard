@@ -3,138 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Nocturno v3</title>
+    <title>Dashboard Nocturno Transparente</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-overlay: rgba(10, 15, 25, 0.9);
-            --card-bg: rgba(30, 41, 59, 0.5); 
+            --bg-overlay: rgba(0, 0, 0, 0.4); /* Mucho más transparente para ver el fondo */
+            --card-bg: rgba(255, 255, 255, 0.05); /* Recuadros casi invisibles */
             --text-main: #ffffff;
-            --accent: #38bdf8;
-            --green: #4ade80;
+            --accent: #38bdf8; /* Tu azul */
         }
 
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 30px;
             min-height: 100vh;
             color: var(--text-main);
-            /* Imagen de fondo nocturna fija y oscurecida */
+            /* IMAGEN DE FONDO NOCTURNA */
             background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
-                        url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+                        url('https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
             background-size: cover;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
         }
 
         .card { 
             background: var(--card-bg); 
-            border-radius: 15px; 
-            padding: 20px; 
-            backdrop-filter: blur(10px);
+            border-radius: 20px; 
+            padding: 25px; 
+            backdrop-filter: blur(5px); /* Desenfoque suave */
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
-        .clock { font-size: 3.5rem; font-weight: 700; text-align: center; color: var(--accent); }
-        h2 { font-size: 0.9rem; margin-top: 0; border-bottom: 1px solid var(--accent); padding-bottom: 8px; text-transform: uppercase; color: var(--accent); }
+        .clock { font-size: 4rem; font-weight: 700; text-align: center; color: var(--accent); text-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
+        h2 { font-size: 1rem; margin-top: 0; border-bottom: 1px solid var(--accent); padding-bottom: 10px; color: var(--accent); text-transform: uppercase; }
         
-        .dolar-price { font-size: 1.6rem; font-weight: bold; color: var(--green); }
-        .content { font-size: 0.9rem; line-height: 1.5; color: rgba(255,255,255,0.9); }
+        .dolar-price { font-size: 1.8rem; font-weight: bold; color: #4ade80; }
+        .content { font-size: 1rem; line-height: 1.6; color: #ffffff; }
         
-        a { color: var(--accent); text-decoration: none; }
-        #news-list { list-style: none; padding: 0; margin: 0; }
-        #news-list li { margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
+        a { color: var(--accent); text-decoration: none; font-weight: 500; }
+        #news-list { list-style: none; padding: 0; }
+        #news-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
 
-        .weather-box { grid-column: span 2; min-height: 250px; }
+        .weather-box { grid-column: span 2; min-height: 300px; }
     </style>
 </head>
 <body>
 
     <div class="card">
         <div class="clock" id="clock">00:00:00</div>
-        <div id="date" style="text-align: center; opacity: 0.8;">Cargando fecha...</div>
+        <div id="date" style="text-align: center; opacity: 0.9; font-size: 1.2rem;">Cargando...</div>
     </div>
 
     <div class="card">
-        <h2>Dólar Argentina</h2>
-        <div style="display: flex; justify-content: space-around; text-align: center; margin-top: 10px;">
-            <div><div style="font-size: 0.7rem; opacity: 0.6;">OFICIAL</div><div class="dolar-price" id="dolar-oficial">...</div></div>
-            <div><div style="font-size: 0.7rem; opacity: 0.6;">BLUE</div><div class="dolar-price" id="dolar-blue">...</div></div>
+        <h2>Dólar en Argentina</h2>
+        <div style="display: flex; justify-content: space-around; text-align: center;">
+            <div><div style="font-size: 0.8rem; opacity: 0.7;">OFICIAL</div><div class="dolar-price" id="dolar-oficial">...</div></div>
+            <div><div style="font-size: 0.8rem; opacity: 0.7;">BLUE</div><div class="dolar-price" id="dolar-blue">...</div></div>
         </div>
     </div>
 
-    <div class="card">
-        <h2>Palabra del Día</h2>
-        <div class="content" id="word-box">Cargando palabra...</div>
-    </div>
-
-    <div class="card weather-box">
-        <h2>Clima Buenos Aires</h2>
+    <div class="card weather-box" id="clima-container">
+        <h2>Clima y Pronóstico 7 Días</h2>
         <a class="weatherwidget-io" href="https://forecast7.com/es/n34d60s58d38/buenos-aires/" data-label_1="BUENOS AIRES" data-theme="pure" data-textcolor="#ffffff" data-days="7">CLIMA</a>
     </div>
 
     <div class="card">
         <h2>Últimas Noticias</h2>
         <div class="content">
-            <ul id="news-list">Cargando noticias...</ul>
+            <div id="news-list">Cargando noticias desde el servidor...</div>
         </div>
     </div>
 
     <div class="card">
-        <h2>Cita del Día</h2>
-        <div class="content" id="quote-box">Cargando cita...</div>
+        <h2>Palabra del Día</h2>
+        <div class="content">
+            <p style="font-size: 1.5rem; color: var(--accent); font-weight: bold; margin: 0;">Serenidad</p>
+            <p style="opacity: 0.8;">Cualidad de sereno; tranquilidad, apacibilidad.</p>
+        </div>
     </div>
 
     <script>
-        // 1. RELOJ
+        // 1. RELOJ ACTUALIZADO
         function updateClock() {
             const now = new Date();
             document.getElementById('clock').textContent = now.toLocaleTimeString('es-AR');
             document.getElementById('date').textContent = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
         }
-        setInterval(updateClock, 1000); updateClock();
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        // 2. DÓLAR (Directo de API)
+        // 2. DÓLAR (API SEGURA)
         async function getDolar() {
             try {
                 const res = await fetch('https://dolarapi.com/v1/dolares');
                 const data = await res.json();
-                const oficial = data.find(d => d.casa === "oficial");
-                const blue = data.find(d => d.casa === "blue");
-                document.getElementById('dolar-oficial').textContent = `$${oficial.venta}`;
-                document.getElementById('dolar-blue').textContent = `$${blue.venta}`;
-            } catch (e) { console.error("Error Dólar"); }
+                document.getElementById('dolar-oficial').textContent = `$${data.find(d => d.casa === "oficial").venta}`;
+                document.getElementById('dolar-blue').textContent = `$${data.find(d => d.casa === "blue").venta}`;
+            } catch (e) { document.getElementById('dolar-blue').textContent = "---"; }
         }
         getDolar();
 
-        // 3. NOTICIAS Y PALABRA (Usando un proxy alternativo)
-        async function fetchFeeds() {
-            // Usamos un servicio de noticias diferente para evitar bloqueos
-            const newsUrl = `https://api.rss2json.com/v1/api.json?rss_url=https://www.clarin.com/rss/lo-ultimo/&api_key=00000000000000000000000000000000`; // API Key genérica
-            
+        // 3. NOTICIAS (NUEVO MÉTODO)
+        async function getNews() {
+            const newsContainer = document.getElementById('news-list');
             try {
-                // Noticias
-                const resNews = await fetch(newsUrl);
-                const dataNews = await resNews.json();
-                if(dataNews.items) {
-                    document.getElementById('news-list').innerHTML = dataNews.items.slice(0, 5).map(i => 
-                        `<li><a href="${i.link}" target="_blank">${i.title}</a></li>`
-                    ).join('');
-                }
-
-                // Cita/Palabra (Simulado si falla el RSS)
-                document.getElementById('word-box').innerHTML = `<b style="color:var(--accent)">Eternidad</b><br>Perpetuidad sin fin.`;
-                document.getElementById('quote-box').innerHTML = `<i>"La tecnología es mejor cuando une a la gente."</i>`;
+                const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.clarin.com/rss/lo-ultimo/');
+                const data = await res.json();
+                let html = '';
+                data.items.slice(0, 4).forEach(item => {
+                    html += `<div style="margin-bottom:15px;"><a href="${item.link}" target="_blank">● ${item.title}</a></div>`;
+                });
+                newsContainer.innerHTML = html;
             } catch (e) {
-                document.getElementById('news-list').textContent = "Error al conectar con el servidor de noticias.";
+                newsContainer.innerHTML = "No se pudieron cargar las noticias. Intenta refrescar.";
             }
         }
-        fetchFeeds();
+        getNews();
 
-        // 4. CLIMA (Inyección forzada)
-        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+        // 4. CLIMA (CARGA FORZADA)
+        function initWeather() {
+            var js, fjs = document.getElementsByTagName('script')[0];
+            if (!document.getElementById('weatherwidget-io-js')) {
+                js = document.createElement('script');
+                js.id = 'weatherwidget-io-js';
+                js.src = 'https://weatherwidget.io/js/widget.min.js';
+                fjs.parentNode.insertBefore(js, fjs);
+            }
+        }
+        setTimeout(initWeather, 1500); // Esperamos 1.5 segundos para cargar el clima
     </script>
 </body>
 </html>
