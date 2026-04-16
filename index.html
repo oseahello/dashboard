@@ -7,85 +7,70 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Paleta Estilo Home Assistant / HomeDash */
             --bg-color: #0d1117;
-            --card-bg: rgba(22, 27, 34, 0.6); 
-            --accent: #38bdf8; /* Azul Cian Eléctrico */
-            --text-primary: #f0f6fc;
-            --text-secondary: #8b949e;
-            --border-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(22, 27, 34, 0.75); 
+            --accent: #38bdf8; /* Azul Cian */
+            --text-primary: #ffffff; /* Blanco puro para mejor lectura */
+            --text-secondary: #cbd5e1; /* Gris claro azulado */
+            --border-color: rgba(56, 189, 248, 0.2);
         }
 
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
-            padding: 30px;
+            padding: 20px;
             color: var(--text-primary);
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
                         url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
             background-size: cover;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
 
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: 24px;
-            padding: 24px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 20px;
             border: 1px solid var(--border-color);
-            transition: transform 0.2s ease;
         }
 
-        .clock-section { text-align: center; grid-column: span 1; }
-        .clock { font-size: 3.8rem; font-weight: 600; color: var(--text-primary); margin: 0; letter-spacing: -2px; }
-        .date { color: var(--accent); text-transform: uppercase; font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; }
+        /* Sección Reloj */
+        .clock-section { text-align: center; }
+        .clock { font-size: 4rem; font-weight: 600; color: var(--text-primary); margin: 0; line-height: 1; }
+        .date { color: var(--accent); text-transform: uppercase; font-size: 0.9rem; font-weight: 600; letter-spacing: 2px; margin-bottom: 5px; }
 
         h2 { 
             font-size: 0.85rem; 
-            color: var(--text-secondary); 
+            color: var(--accent); 
             text-transform: uppercase; 
             letter-spacing: 1.5px; 
-            margin-bottom: 20px;
-            margin-top: 0;
+            margin: 0 0 15px 0;
             display: flex;
             align-items: center;
         }
 
-        h2::before {
-            content: '';
-            width: 4px;
-            height: 16px;
-            background: var(--accent);
-            margin-right: 10px;
-            border-radius: 2px;
-        }
+        .dolar-val { font-size: 1.8rem; font-weight: 600; color: #fff; }
+        .dolar-label { font-size: 0.75rem; color: var(--text-secondary); }
 
-        .dolar-val { font-size: 1.8rem; font-weight: 600; color: var(--text-primary); }
-        .dolar-label { font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 4px; }
-
-        .weather-container { grid-column: span 2; min-height: 280px; }
+        .weather-container { grid-column: span 2; min-height: 150px; }
         
-        #news-container { font-size: 0.9rem; line-height: 1.4; }
         .news-link { 
             display: block; 
             color: var(--text-primary); 
             text-decoration: none; 
-            margin-bottom: 12px;
-            padding: 8px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.03);
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            transition: 0.3s;
         }
-        .news-link:hover { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
-
-        /* Palabra del día con estilo limpio */
-        .word-title { font-size: 1.5rem; color: var(--accent); font-weight: 600; margin-bottom: 5px; }
-        .word-desc { color: var(--text-secondary); font-style: italic; }
+        .news-link:hover { background: rgba(56, 189, 248, 0.2); transform: translateX(5px); }
 
         @media (max-width: 768px) {
-            body { padding: 15px; }
             .weather-container { grid-column: span 1; }
         }
     </style>
@@ -93,8 +78,8 @@
 <body>
 
     <div class="card clock-section">
-        <div class="date" id="date">CARGANDO...</div>
-        <div class="clock" id="clock">00:00</div>
+        <div class="date" id="date">--</div>
+        <div class="clock" id="clock">00:00:00</div>
     </div>
 
     <div class="card">
@@ -106,14 +91,14 @@
             </div>
             <div style="text-align: right;">
                 <div class="dolar-label">OFICIAL</div>
-                <div class="dolar-val" id="oficial-val" style="color: var(--text-secondary); font-size: 1.4rem;">...</div>
+                <div class="dolar-val" id="oficial-val">...</div>
             </div>
         </div>
     </div>
 
     <div class="card weather-container">
-        <h2>Estado del Tiempo</h2>
-        <a class="weatherwidget-io" href="https://forecast7.com/es/n34d60s58d38/buenos-aires/" data-label_1="BUENOS AIRES" data-theme="pure" data-textcolor="#f0f6fc" data-accent="#38bdf8" data-days="7">CLIMA</a>
+        <h2>Clima Actual</h2>
+        <a class="weatherwidget-io" href="https://forecast7.com/es/n34d61s58d38/buenos-aires/" data-label_1="BUENOS AIRES" data-theme="pure" data-textcolor="#ffffff" data-accent="#38bdf8" >CLIMA</a>
     </div>
 
     <div class="card">
@@ -121,20 +106,19 @@
         <div id="news-container">Cargando noticias...</div>
     </div>
 
-    <div class="card">
-        <h2>Diccionario Diario</h2>
-        <div class="word-title">Efímero</div>
-        <div class="word-desc">Aquello que dura por un período muy corto de tiempo.</div>
-    </div>
-
     <script>
-        // Reloj
+        // Reloj eXtremo: Se asegura de cargar inmediatamente y actualizar
         function updateTime() {
             const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('date').textContent = now.toLocaleDateString('es-AR', { weekday: 'short', day: '2-digit', month: 'short' });
+            const optionsDate = { weekday: 'long', day: '2-digit', month: 'long' };
+            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            
+            document.getElementById('clock').textContent = now.toLocaleTimeString('es-AR', optionsTime);
+            document.getElementById('date').textContent = now.toLocaleDateString('es-AR', optionsDate);
         }
-        setInterval(updateTime, 1000); updateTime();
+        
+        setInterval(updateTime, 1000);
+        updateTime();
 
         // Finanzas
         async function fetchFinance() {
@@ -146,8 +130,9 @@
             } catch (e) { console.error("Error Finanzas"); }
         }
         fetchFinance();
+        setInterval(fetchFinance, 300000); // Cada 5 min
 
-        // Noticias (Método Reforzado)
+        // Noticias
         async function fetchNews() {
             try {
                 const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.clarin.com/rss/lo-ultimo/');
@@ -155,21 +140,12 @@
                 document.getElementById('news-container').innerHTML = data.items.slice(0, 4).map(item => 
                     `<a href="${item.link}" class="news-link" target="_blank">${item.title}</a>`
                 ).join('');
-            } catch (e) { document.getElementById('news-container').textContent = "Reconectando noticias..."; }
+            } catch (e) { document.getElementById('news-container').textContent = "Error al cargar noticias"; }
         }
         fetchNews();
-        setInterval(fetchNews, 600000); // Actualiza cada 10 min
 
-        // Carga de Clima con retardo para evitar bloqueos de GitHub
-        window.onload = function() {
-            setTimeout(function() {
-                var js, fjs = document.getElementsByTagName('script')[0];
-                js = document.createElement('script');
-                js.id = 'weatherwidget-io-js';
-                js.src = 'https://weatherwidget.io/js/widget.min.js';
-                fjs.parentNode.insertBefore(js, fjs);
-            }, 1000);
-        };
+        // Inicialización del Widget de Clima
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
     </script>
 </body>
 </html>
