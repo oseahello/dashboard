@@ -57,6 +57,55 @@
 
         .weather-container { grid-column: span 2; min-height: 150px; }
         
+        .weather-box {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .weather-temp { font-size: 2.5rem; font-weight: 600; color: var(--accent); }
+        .weather-desc { font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px; }
+        .weather-location { font-size: 0.8rem; color: var(--text-secondary); margin-top: 3px; }
+
+        .quote-section {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(139, 92, 246, 0.15));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .quote-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-style: italic;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .quote-author {
+            font-size: 0.85rem;
+            color: var(--accent);
+            text-align: right;
+        }
+
+        .refresh-btn {
+            background: rgba(56, 189, 248, 0.2);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-left: 10px;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(56, 189, 248, 0.4);
+        }
+
         .news-link { 
             display: block; 
             color: var(--text-primary); 
@@ -70,8 +119,18 @@
         }
         .news-link:hover { background: rgba(56, 189, 248, 0.2); transform: translateX(5px); }
 
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            margin-right: 5px;
+        }
+
         @media (max-width: 768px) {
             .weather-container { grid-column: span 1; }
+            .quote-section { grid-column: span 1; }
         }
     </style>
 </head>
@@ -83,7 +142,7 @@
     </div>
 
     <div class="card">
-        <h2>Mercado Financiero</h2>
+        <h2><span class="status-dot"></span>Mercado Financiero</h2>
         <div style="display: flex; justify-content: space-between;">
             <div>
                 <div class="dolar-label">BLUE VENTA</div>
@@ -97,8 +156,24 @@
     </div>
 
     <div class="card weather-container">
-        <h2>Clima Actual</h2>
-        <a class="weatherwidget-io" href="https://forecast7.com/es/n34d61s58d38/buenos-aires/" data-label_1="BUENOS AIRES" data-theme="pure" data-textcolor="#ffffff" data-accent="#38bdf8" >CLIMA</a>
+        <h2>
+            Clima Actual
+            <button class="refresh-btn" onclick="fetchWeather()">↻</button>
+        </h2>
+        <div class="weather-box">
+            <div class="weather-temp" id="weather-temp">--°</div>
+            <div class="weather-desc" id="weather-desc">Cargando...</div>
+            <div class="weather-location" id="weather-location">Buenos Aires</div>
+        </div>
+    </div>
+
+    <div class="card quote-section">
+        <h2>
+            💡 Frase del Día
+            <button class="refresh-btn" onclick="fetchQuote()">↻</button>
+        </h2>
+        <div class="quote-text" id="quote-text">Cargando frase inspiradora...</div>
+        <div class="quote-author" id="quote-author">— Autor</div>
     </div>
 
     <div class="card">
@@ -107,7 +182,7 @@
     </div>
 
     <script>
-        // Reloj eXtremo: Se asegura de cargar inmediatamente y actualizar
+        // ==================== RELOJ ====================
         function updateTime() {
             const now = new Date();
             const optionsDate = { weekday: 'long', day: '2-digit', month: 'long' };
@@ -120,19 +195,98 @@
         setInterval(updateTime, 1000);
         updateTime();
 
-        // Finanzas
+        // ==================== FINANZAS ====================
         async function fetchFinance() {
             try {
                 const res = await fetch('https://dolarapi.com/v1/dolares');
                 const data = await res.json();
-                document.getElementById('blue-val').textContent = `$${data.find(d => d.casa === "blue").venta}`;
-                document.getElementById('oficial-val').textContent = `$${data.find(d => d.casa === "oficial").venta}`;
-            } catch (e) { console.error("Error Finanzas"); }
+                const blue = data.find(d => d.casa === "blue");
+                const oficial = data.find(d => d.casa === "oficial");
+                
+                document.getElementById('blue-val').textContent = blue ? `$${blue.venta}` : 'N/A';
+                document.getElementById('oficial-val').textContent = oficial ? `$${oficial.venta}` : 'N/A';
+            } catch (e) { 
+                console.error("Error Finanzas:", e);
+            }
         }
         fetchFinance();
         setInterval(fetchFinance, 300000); // Cada 5 min
 
-        // Noticias
+        // ==================== CLIMA ====================
+        async function fetchWeather() {
+            try {
+                // API de Open-Meteo (sin clave API necesaria)
+                const response = await fetch(
+                    'https://api.open-meteo.com/v1/forecast?latitude=-34.6037&longitude=-58.3816&current=temperature_2m,weather_code,is_day&timezone=America/Argentina/Buenos_Aires'
+                );
+                const data = await response.json();
+                const current = data.current;
+                
+                document.getElementById('weather-temp').textContent = `${current.temperature_2m}°`;
+                document.getElementById('weather-desc').textContent = getWeatherDescription(current.weather_code, current.is_day);
+                
+            } catch (e) { 
+                console.error("Error Clima:", e);
+                document.getElementById('weather-desc').textContent = 'Error al cargar clima';
+            }
+        }
+
+        function getWeatherDescription(code, isDay) {
+            const descriptions = {
+                0: 'Cielo despejado',
+                1: 'Principalmente despejado',
+                2: 'Parcialmente nublado',
+                3: 'Nublado',
+                45: 'Brumoso',
+                48: 'Bruma helada',
+                51: 'Llovizna ligera',
+                53: 'Llovizna moderada',
+                55: 'Llovizna densa',
+                61: 'Lluvia débil',
+                63: 'Lluvia moderada',
+                65: 'Lluvia fuerte',
+                71: 'Nieve débil',
+                73: 'Nieve moderada',
+                75: 'Nieve fuerte',
+                80: 'Chubascos débiles',
+                81: 'Chubascos moderados',
+                82: 'Chubascos violentos',
+                95: 'Tormenta',
+                96: 'Tormenta con granizo'
+            };
+            return descriptions[code] || 'Clima desconocido';
+        }
+
+        fetchWeather();
+        setInterval(fetchWeather, 600000); // Cada 10 minutos
+
+        // ==================== FRASE DEL DÍA ====================
+        async function fetchQuote() {
+            try {
+                const res = await fetch('https://api.quotable.io/random?language=es');
+                const data = await res.json();
+                
+                document.getElementById('quote-text').textContent = `"${data.content}"`;
+                document.getElementById('quote-author').textContent = `— ${data.author}`;
+            } catch (e) {
+                console.error("Error Frase:", e);
+                // Frases alternativas si falla la API
+                const frases = [
+                    { text: "La vida es lo que pasa mientras estás ocupado haciendo otros planes.", author: "John Lennon" },
+                    { text: "El único modo de hacer un gran trabajo es amar lo que haces.", author: "Steve Jobs" },
+                    { text: "La innovación distingue a un líder de un seguidor.", author: "Steve Jobs" },
+                    { text: "La vida es 10% lo que te sucede y 90% cómo reaccionas ante ello.", author: "Charles R. Swindoll" },
+                    { text: "No es la montaña la que debemos conquistar sino a nosotros mismos.", author: "Edmund Hillary" }
+                ];
+                const random = frases[Math.floor(Math.random() * frases.length)];
+                document.getElementById('quote-text').textContent = `"${random.text}"`;
+                document.getElementById('quote-author').textContent = `— ${random.author}`;
+            }
+        }
+        fetchQuote();
+        setInterval(fetchQuote, 86400000); // Cada 24 horas
+
+        // ==================== NOTICIAS ====================
         async function fetchNews() {
             try {
                 const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.clarin.com/rss/lo-ultimo/');
@@ -140,12 +294,11 @@
                 document.getElementById('news-container').innerHTML = data.items.slice(0, 4).map(item => 
                     `<a href="${item.link}" class="news-link" target="_blank">${item.title}</a>`
                 ).join('');
-            } catch (e) { document.getElementById('news-container').textContent = "Error al cargar noticias"; }
+            } catch (e) { 
+                document.getElementById('news-container').textContent = "Error al cargar noticias"; 
+            }
         }
         fetchNews();
-
-        // Inicialización del Widget de Clima
-        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
     </script>
 </body>
 </html>
